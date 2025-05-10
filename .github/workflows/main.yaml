@@ -16,7 +16,7 @@ jobs:
       golangci-version: ${{ steps.versions.outputs.golangci-version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
       - name: Set version
         id: versions
         run: |
