@@ -18,6 +18,7 @@ on:
 
 jobs:
   build:
+    name: Build and Publish Docker Image for ${{ inputs.app }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -59,7 +60,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./Dockerfile.${{ inputs.app }}
+          context: Dockerfile.${{ inputs.app }}
           push: true
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           tags: ${{ steps.meta.outputs.tags }}
