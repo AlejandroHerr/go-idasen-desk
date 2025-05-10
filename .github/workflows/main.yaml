@@ -1,0 +1,34 @@
+name: Main
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Other jobs in your main workflow...
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      go-version: ${{ steps.versions.outputs.go-version }}
+      golangci-version: ${{ steps.versions.outputs.golangci-version }}
+    steps:
+      - name: Set version
+        id: versions
+        run: |
+          go_version=$(grep -m 1 '^go ' go.mod | awk '{print $2}')
+          echo "go-version=$go_version" >> $GITHUB_ENV
+          echo "Go version set to $go_version"
+
+          golangci_version=$(grep -m 1 '^## ' .golangci.yaml| awk '{print $NF}')
+          echo "golangci-version=$golangci_version" >> $GITHUB_ENV
+          echo "Golangci-lint version set to $golangci_version"
+  lint:
+    name: Lint
+    needs: setup
+    uses: ./.github/workflows/golangci-lint.yml
+    with:
+      go-version: ${{ needs.setup.outputs.go-version }}
+      golangci-version: ${{ needs.setup.outputs.golangci-version }}
