@@ -20,6 +20,9 @@ jobs:
   build:
     name: Build and Publish ${{ inputs.app }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,7 +43,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/${{ github.repository_owner }}/go-idasen-desk-${{ inputs.app }}
+            ghcr.io/${{ github.repository }}-${{ inputs.app }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
