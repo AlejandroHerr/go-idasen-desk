@@ -4,13 +4,11 @@ on:
   workflow_call:
     inputs:
       go-version:
-        required: false
+        required: true
         type: string
-        default: "1.24"
       golangci-version:
-        required: false
+        required: true
         type: string
-        default: "v2"
 jobs:
   lint:
     name: Lint Go Code
