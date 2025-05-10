@@ -1,0 +1,29 @@
+#!/bin/bash
+
+commit_msg_file=$1
+commit_msg=$(cat "$commit_msg_file")
+
+# Regular expression for Conventional Commits pattern
+pattern='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9 -]+\))?: .+'
+
+if ! [[ "$commit_msg" =~ $pattern ]]; then
+  echo "ERROR: Commit message does not follow the Conventional Commits standard."
+  echo "Example: feat(auth): add login functionality"
+  echo "Types: build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test"
+  exit 1
+fi
+
+# Ensure first letter after colon is not capitalized
+first_letter=$(echo "$commit_msg" | sed -n 's/^[^:]*: \(.\).*/\1/p')
+if [[ "$first_letter" =~ [A-Z] ]]; then
+  echo "ERROR: First letter after the colon should not be capitalized."
+  exit 1
+fi
+
+# Ensure no period at the end of subject line
+if [[ "$commit_msg" =~ ^[^:]*:[^.]*\.$  ]]; then
+  echo "ERROR: No period at the end of the subject line."
+  exit 1
+fi
+
+exit 0
