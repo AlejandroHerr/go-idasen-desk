@@ -28,7 +28,7 @@ jobs:
   lint:
     name: Lint
     needs: setup
-    uses: ./.github/workflows/_ci.yml
+    uses: ./.github/workflows/_ci.yaml
     with:
       go-version: ${{ needs.setup.outputs.go-version }}
       golangci-version: ${{ needs.setup.outputs.golangci-version }}
