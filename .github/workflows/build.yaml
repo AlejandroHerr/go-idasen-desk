@@ -7,7 +7,7 @@ on:
 
 jobs:
   build_app:
-    uses: ./.github/workflows/_build.yaml@main # Note: needs to reference a branch
+    uses: ./.github/workflows/_build.yaml
     strategy:
       matrix:
         app: [scanner]
