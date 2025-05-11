@@ -1,3 +1,5 @@
+github.com/AlejandroHerr/go-common v1.0.1 h1:f5D+27bmV3q0sZ1jGNE2jcEfBIVkdohE48rCMvP5rXA=
+github.com/AlejandroHerr/go-common v1.0.1/go.mod h1:USUYHexA1acpVOHiHf/tFJvU7EZMEwIgJ/4QqnX2mqY=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/JuulLabs-OSS/cbgo v0.0.1 h1:A5JdglvFot1J9qYR0POZ4qInttpsVPN9lqatjaPp2ro=
 github.com/JuulLabs-OSS/cbgo v0.0.1/go.mod h1:L4YtGP+gnyD84w7+jN66ncspFRfOYB5aj9QSXaFHmBA=
