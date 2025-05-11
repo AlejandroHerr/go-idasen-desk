@@ -35,7 +35,7 @@ jobs:
       golangci-version: ${{ needs.setup.outputs.golangci-version }}
   semantic_release:
     name: Bump Version
-    needs: [setup, lint]
+    needs: [setup, ci]
     runs-on: ubuntu-latest
     permissions:
       contents: write
