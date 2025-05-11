@@ -6,17 +6,10 @@ on:
       - v*
 
 jobs:
-  build_release:
-    name: Build and Publish Release
-    runs-on: ubuntu-latest
+  build_app:
+    uses: ./.github/workflows/_build.yaml@main # Note: needs to reference a branch
     strategy:
       matrix:
         app: [scanner]
-    steps:
-      - name: Run for ${{ matrix.app }}
-        uses: ./.github/workflows/_build.yaml
-        with:
-          app: ${{ matrix.app }}
-          version: ${{ github.ref_name }}
-          commit: ${{ github.sha }}
-          build_time: ${{ steps.version.outputs.build_time }}
+    with:
+      app: ${{ matrix.app }}
