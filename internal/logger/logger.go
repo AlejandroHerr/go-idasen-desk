@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/AlejandroHerr/go-idasen-desk/version"
 	"github.com/golang-cz/devslog"
 )
 
@@ -15,8 +16,6 @@ type (
 		Environment string     // "development", "production", "staging"
 		Level       slog.Level // "debug", "info", "warn", "error"
 		App         string
-		Version     string
-		Commit      string
 	}
 	ConfigFunc func(*config)
 )
@@ -26,8 +25,6 @@ func New(cfgs ...ConfigFunc) *slog.Logger {
 		Environment: "development",
 		Level:       slog.LevelDebug,
 		App:         "n/a",
-		Version:     "n/a",
-		Commit:      "n/a",
 	}
 
 	for _, c := range cfgs {
@@ -56,8 +53,10 @@ func New(cfgs ...ConfigFunc) *slog.Logger {
 	logger := slog.New(handler).With(
 		"app", cfg.App,
 		"environment", cfg.Environment,
-		"version", cfg.Version,
-		"commit", cfg.Commit,
+		"version", version.GetVersion(),
+		"commit", version.GetCommit(),
+		"build_time", version.GetBuildTime(),
+		"go_version", version.GetGoVersion(),
 	)
 
 	return logger
@@ -82,18 +81,6 @@ func WithApp(app string) ConfigFunc {
 	}
 }
 
-func WithVersion(version string) ConfigFunc {
-	return func(cfg *config) {
-		cfg.Version = version
-	}
-}
-
-func WithCommit(commit string) ConfigFunc {
-	return func(cfg *config) {
-		cfg.Commit = commit
-	}
-}
-
 func levelFromString(level string, defaultLevel slog.Level) slog.Level {
 	switch strings.ToLower(level) {
 	case "debug":
@@ -107,40 +94,6 @@ func levelFromString(level string, defaultLevel slog.Level) slog.Level {
 	default:
 		return defaultLevel
 	}
-}
-
-// NewTestLogger returns a no-op logger that discards all output.
-// Perfect for unit tests where you don't want to see log output.
-func NewTestLogger() *slog.Logger {
-	return slog.New(NewDiscardHandler())
-}
-
-// DiscardHandler implements slog.Handler but discards all log records.
-type DiscardHandler struct{}
-
-// NewDiscardHandler creates a new handler that discards all logs.
-func NewDiscardHandler() *DiscardHandler {
-	return &DiscardHandler{}
-}
-
-// Enabled always returns false to minimize overhead.
-func (h *DiscardHandler) Enabled(_ context.Context, _ slog.Level) bool {
-	return false
-}
-
-// Handle discards the record and does nothing.
-func (h *DiscardHandler) Handle(_ context.Context, _ slog.Record) error {
-	return nil
-}
-
-// WithAttrs returns a new handler with the same behavior.
-func (h *DiscardHandler) WithAttrs(_ []slog.Attr) slog.Handler {
-	return h
-}
-
-// WithGroup returns a new handler with the same behavior.
-func (h *DiscardHandler) WithGroup(_ string) slog.Handler {
-	return h
 }
 
 type ContextHandler struct {

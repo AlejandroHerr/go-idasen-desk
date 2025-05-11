@@ -5,6 +5,7 @@ FROM golang:1.24.3-alpine AS builder
 ARG VERSION=dev
 ARG COMMIT=none
 ARG BUILD_TIME=unknown
+ARG ENVIRONMENT=production  # Default to production for Docker builds
 
 WORKDIR /app
 
@@ -19,7 +20,8 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build \
     -ldflags "-X github.com/AlejandroHerr/go-idasen-desk/version.Version=${VERSION} \
               -X github.com/AlejandroHerr/go-idasen-desk/version.Commit=${COMMIT} \
-              -X github.com/AlejandroHerr/go-idasen-desk/version.BuildTime=${BUILD_TIME}" \
+              -X github.com/AlejandroHerr/go-idasen-desk/version.BuildTime=${BUILD_TIME} \
+              -X github.com/AlejandroHerr/go-idasen-desk/version.Environment=${ENVIRONMENT}" \
     -o /app/bin/scanner ./cmd/scanner
 
 # Final stage

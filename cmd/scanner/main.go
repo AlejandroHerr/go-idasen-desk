@@ -17,9 +17,7 @@ func main() {
 	ctx := context.Background()
 	logger := logger.New(
 		logger.WithApp("go-idasen-desk-scanner"),
-		logger.WithVersion(version.GetVersion()),
-		logger.WithCommit(version.GetCommit()),
-		logger.WithEnvironment("development"),
+		logger.WithEnvironment(version.GetEnvironment()),
 	)
 
 	if err := run(ctx, logger); err != nil {
