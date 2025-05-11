@@ -1,9 +1,9 @@
-name: Build and Publichs Applications
+name: Build and Publish Applications
 
 on:
   push:
     tags:
-      - v*
+      - "v*"
 
 jobs:
   build_app:
