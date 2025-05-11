@@ -6,18 +6,22 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/AlejandroHerr/go-common/pkg/logging"
 	"github.com/AlejandroHerr/go-idasen-desk/internal/ble"
 	"github.com/AlejandroHerr/go-idasen-desk/internal/idasen"
-	"github.com/AlejandroHerr/go-idasen-desk/internal/logger"
 	"github.com/AlejandroHerr/go-idasen-desk/version"
 	goble "github.com/go-ble/ble"
 )
 
 func main() {
 	ctx := context.Background()
-	logger := logger.New(
-		logger.WithApp("go-idasen-desk-scanner"),
-		logger.WithEnvironment(version.GetEnvironment()),
+	logger := logging.NewLogger(
+		logging.WithApp("go-idasen-desk-scanner"),
+		logging.WithEnvironment(version.GetEnvironment()),
+		logging.WithVersion(version.GetVersion()),
+		logging.WithCommit(version.GetCommit()),
+		logging.WithBuildTime(version.GetBuildTime()),
+		logging.WithGoVersion(version.GetGoVersion()),
 	)
 
 	if err := run(ctx, logger); err != nil {
