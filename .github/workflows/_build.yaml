@@ -59,7 +59,7 @@ jobs:
             echo "VERSION=dev-$(echo $GITHUB_REF | sed 's/refs\/heads\///')-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           fi
           echo "BUILD_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
-          echo "COMMIT=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          echo "COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
