@@ -3,7 +3,7 @@ name: Build and Publichs Applications
 on:
   push:
     tags:
-      - "*"
+      - v*
 
 jobs:
   build_release:
