@@ -26,8 +26,8 @@ jobs:
           golangci_version=$(grep -m 1 '^## ' .golangci.yaml| awk '{print $NF}')
           echo "golangci-version=$golangci_version" >> $GITHUB_OUTPUT
           echo "Golangci-lint version set to $golangci_version"
-  lint:
-    name: Lint
+  ci:
+    name: Countinuous Integration
     needs: setup
     uses: ./.github/workflows/_ci.yaml
     with:
@@ -45,5 +45,5 @@ jobs:
       - name: Release
         uses: go-semantic-release/action@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_PAT }}
           changelog-file: CHANGELOG.md
