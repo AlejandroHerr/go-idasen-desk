@@ -6,15 +6,6 @@ on:
       app:
         required: true
         type: string
-  workflow_dispatch:
-    inputs:
-      app:
-        description: The name of the application to build and publish
-        required: true
-        type: string
-        default: scanner
-        options:
-          - scanner
 
 jobs:
   build:
