@@ -3,7 +3,7 @@ module github.com/AlejandroHerr/go-idasen-desk
 go 1.24.3
 
 require (
-	github.com/AlejandroHerr/go-common v1.0.1
+	github.com/AlejandroHerr/go-common v1.3.0
 	github.com/go-ble/ble v0.0.0-20240122180141-8c5522f54333
 )
 
