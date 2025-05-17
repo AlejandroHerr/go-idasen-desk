@@ -1,9 +1,16 @@
-name: Main
+name: Bump Patch Version
 
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Bump patch version
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   setup:
@@ -45,3 +52,4 @@ jobs:
         with:
           github-token: ${{ secrets.GH_PAT }}
           changelog-file: CHANGELOG.md
+          force-bump-patch-version: ${{ inputs.bump }}
