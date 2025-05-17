@@ -3,13 +3,13 @@ module github.com/AlejandroHerr/go-idasen-desk
 go 1.24.3
 
 require (
-	github.com/AlejandroHerr/go-common v1.0.1
+	github.com/AlejandroHerr/go-common v1.3.0
 	github.com/go-ble/ble v0.0.0-20240122180141-8c5522f54333
+	github.com/golang-cz/devslog v0.0.13
 )
 
 require (
 	github.com/JuulLabs-OSS/cbgo v0.0.1 // indirect
-	github.com/golang-cz/devslog v0.0.13 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.1 // indirect
 	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
