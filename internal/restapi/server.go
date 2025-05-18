@@ -17,6 +17,7 @@ type Config struct {
 }
 
 func NewHandler(
+	authTokens []string,
 	manager *idasen.Manager,
 	logger *slog.Logger,
 ) http.Handler {
@@ -38,7 +39,7 @@ func NewHandler(
 		render.JSON(w, r, ok)
 	}))
 
-	v1router := NewV1Router(manager, logger)
+	v1router := NewV1Router(authTokens, manager, logger)
 
 	r.Mount("/v1", v1router)
 

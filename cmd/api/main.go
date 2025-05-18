@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/AlejandroHerr/go-common/pkg/logging"
 	"github.com/AlejandroHerr/go-idasen-desk/internal/ble"
+	"github.com/AlejandroHerr/go-idasen-desk/internal/config"
 	"github.com/AlejandroHerr/go-idasen-desk/internal/idasen"
 	"github.com/AlejandroHerr/go-idasen-desk/internal/restapi"
 	"github.com/AlejandroHerr/go-idasen-desk/version"
@@ -45,6 +47,11 @@ func run(pctx context.Context, logger *slog.Logger) error {
 	ctx, cancelCtx := context.WithCancel(pctx)
 	defer cancelCtx()
 
+	cfg, err := loadConfig(logger)
+	if err != nil {
+		return fmt.Errorf("loading config: %w", err)
+	}
+
 	dev, err := ble.NewDevice("default")
 	if err != nil {
 		return fmt.Errorf("new device: %w", err)
@@ -69,12 +76,12 @@ func run(pctx context.Context, logger *slog.Logger) error {
 		}
 	}()
 
-	handler := restapi.NewHandler(manager, logger)
+	handler := restapi.NewHandler(cfg.AuthTokens, manager, logger)
 
 	serverResult := make(chan error, 1)
 	defer close(serverResult)
 
-	go startServer(ctx, serverResult, handler, logger)
+	go startServer(ctx, cfg.Port, serverResult, handler, logger)
 
 	select {
 	case err = <-serverResult:
@@ -90,11 +97,25 @@ func run(pctx context.Context, logger *slog.Logger) error {
 	return nil
 }
 
+const defaultConfigPath = "/etc/go-idasen-desk/config.yaml"
+
+func loadConfig(logger *slog.Logger) (*config.RestConfig, error) {
+	configPath := flag.String("config", defaultConfigPath, "Path to the config file")
+	flag.Parse()
+
+	cfg, err := config.Load(*configPath, logger)
+	if err != nil {
+		return nil, fmt.Errorf("loading config: %w", err)
+	}
+
+	return &cfg.Rest, nil
+}
+
 const defaultReadHeaderTimeout = 5 * time.Minute
 
-func startServer(ctx context.Context, resultCh chan<- error, handler http.Handler, logger *slog.Logger) {
+func startServer(ctx context.Context, port int, resultCh chan<- error, handler http.Handler, logger *slog.Logger) {
 	server := &http.Server{
-		Addr:              ":3000",
+		Addr:              fmt.Sprintf(":%d", port),
 		Handler:           handler,
 		ReadHeaderTimeout: defaultReadHeaderTimeout,
 	}
@@ -110,7 +131,7 @@ func startServer(ctx context.Context, resultCh chan<- error, handler http.Handle
 	errCh := make(chan error, 1)
 
 	go func() {
-		logger.InfoContext(ctx, "Starting server...")
+		logger.InfoContext(ctx, "Starting server...", slog.Int("port", port))
 
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logger.ErrorContext(ctx, "Error starting server", slog.String("error", err.Error()))

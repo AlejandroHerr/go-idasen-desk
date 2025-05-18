@@ -6,14 +6,17 @@ import (
 	"net/http"
 
 	"github.com/AlejandroHerr/go-common/pkg/api"
+	"github.com/AlejandroHerr/go-idasen-desk/internal/auth"
 	"github.com/AlejandroHerr/go-idasen-desk/internal/idasen"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 )
 
-func NewV1Router(manager *idasen.Manager, logger *slog.Logger) *chi.Mux {
+func NewV1Router(authTokens []string, manager *idasen.Manager, logger *slog.Logger) *chi.Mux {
 	r := chi.NewRouter()
+
+	r.Use(auth.ValidateToken(authTokens))
 
 	r.Get("/desk/{id}", api.HandleRendererFunc(
 		func(_ http.ResponseWriter, r *http.Request) (render.Renderer, *api.ErrRepsonse) {
