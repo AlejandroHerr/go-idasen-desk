@@ -1,0 +1,5 @@
+rest:
+  port: 3000
+  auth_tokens:
+    - aaaaa
+    - bbbbb

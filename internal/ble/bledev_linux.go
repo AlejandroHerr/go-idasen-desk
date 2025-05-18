@@ -7,7 +7,7 @@ import (
 	"github.com/go-ble/ble/linux"
 )
 
-func DefaultDevice(opts ...goble.Option) (goble.Device, error) {
+func DefaultDevice(opts ...goble.Option) (*linux.Device, error) {
 	device, err := linux.NewDevice(opts...)
 	if err != nil {
 		return nil, fmt.Errorf("creating linux device: %w", err)

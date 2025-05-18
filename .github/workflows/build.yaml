@@ -6,6 +6,14 @@ on:
       - "v*"
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.set-matrix.outputs.apps }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: set-matrix
+        run: echo "apps=$(cat apps.json | jq -c .apps)" >> $GITHUB_OUTPUT
   build_app:
     permissions:
       contents: read
@@ -14,6 +22,6 @@ jobs:
     uses: ./.github/workflows/_build.yaml
     strategy:
       matrix:
-        app: [scanner]
+        app: ${{ fromJson(needs.prepare.outputs.apps) }}
     with:
       app: ${{ matrix.app }}

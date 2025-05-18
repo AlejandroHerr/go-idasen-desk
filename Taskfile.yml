@@ -2,6 +2,7 @@ version: "3"
 
 vars:
   IMAGE_NAME: go-idasen-desk
+  BUILD_FOLDER: bin
   VERSION:
     sh: git describe --tags --always --dirty 2>/dev/null || echo "dev"
   COMMIT:
@@ -11,19 +12,46 @@ vars:
   LDFLAGS: -ldflags "-X github.com/AlejandroHerr/go-idasen-desk/version.Version={{.VERSION}} -X github.com/AlejandroHerr/go-idasen-desk/version.Commit={{.COMMIT}} -X github.com/AlejandroHerr/go-idasen-desk/version.BuildTime={{.BUILD_TIME}}"
 
 tasks:
-  run/scanner:
+  run:*:
+    desc: Run application
+    vars:
+      APP: "{{index .match 0}}"
     cmds:
-      - go run -v ./cmd/scanner/main.go
-  build/scanner:
-    desc: Build scanner application
+      - go run -v ./cmd/{{.APP}}/main.go {{.CLI_ARGS}}
+  run:*:watch:
+    desc: Run application with watch
+    vars:
+      APP: "{{index .match 0}}"
     cmds:
-      - echo "Building scanner {{.VERSION}} ({{.COMMIT}})"
-      - go build {{.LDFLAGS}} -o bin/scanner ./cmd/scanner
+      - wgo run -v ./cmd/{{.APP}}/main.go {{.CLI_ARGS}}
+  build/*:
+    desc: Build application
+    vars:
+      APP: "{{index .match 0}}"
+    cmds:
+      - echo "Building {{.APP}} {{.VERSION}} ({{.COMMIT}})"
+      - go build {{.LDFLAGS}} -o {{BUILD_FOLDER}}/{{.APP}} ./cmd/{{.APP}}
     sources:
-      - cmd/scanner/**/*.go
+      - cmd/{{.APP}}/**/*.go
       - version/*.go
     generates:
-      - bin/scanner
+      - bin/{{.APP}}
+  docker/*:
+    desc: Build Docker image
+    vars:
+      APP: "{{index .match 0}}"
+    cmds:
+      - docker build
+        --build-arg APP_NAME={{.APP}}
+        --build-arg VERSION={{.VERSION}}
+        --build-arg COMMIT={{.COMMIT}}
+        --build-arg BUILD_TIME={{.BUILD_TIME}}
+        -t {{.IMAGE_NAME}}-{{.APP}}:{{.VERSION}}
+        -f Dockerfile .
+  test:
+    desc: Run tests
+    cmds:
+      - go test -v ./...
   lint:
     desc: Run linters
     cmds:
@@ -32,20 +60,7 @@ tasks:
     desc: Run linters and fix issues
     cmds:
       - golangci-lint run --fix --timeout 5m
-  test:
-    desc: Run tests
-    cmds:
-      - go test -v ./...
-  docker/scanner:
-    desc: Build scanner Docker image
-    cmds:
-      - docker build
-        --build-arg VERSION={{.VERSION}}
-        --build-arg COMMIT={{.COMMIT}}
-        --build-arg BUILD_TIME={{.BUILD_TIME}}
-        -t {{.IMAGE_NAME}}-scanner:{{.VERSION}}
-        -f Dockerfile.scanner .
   clean:
     desc: Clean build artifacts
     cmds:
-      - rm -rf bin/
+      - rm -rf BUILD_FOLDER/
