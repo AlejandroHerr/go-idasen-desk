@@ -26,7 +26,7 @@ func main() {
 	defer cancelCtx()
 
 	logger := logging.NewLogger(
-		logging.WithApp("go-idasen-desk-cli"),
+		logging.WithApp("go-idasen-desk-rest"),
 		logging.WithEnvironment(version.GetEnvironment()),
 		logging.WithVersion(version.GetVersion()),
 		logging.WithCommit(version.GetCommit()),
