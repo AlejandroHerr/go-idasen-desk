@@ -70,7 +70,8 @@ func NewV1Router(manager *idasen.Manager, logger *slog.Logger) *chi.Mux {
 				)
 			}
 
-			if err := manager.MoveTo(r.Context(), id, req.Height); err != nil {
+			height, err := manager.MoveTo(r.Context(), id, req.Height)
+			if err != nil {
 				logger.ErrorContext(r.Context(), "Error moving to height", slog.String("error", err.Error()))
 
 				return nil, api.NewErrorResponse(
@@ -82,7 +83,7 @@ func NewV1Router(manager *idasen.Manager, logger *slog.Logger) *chi.Mux {
 				)
 			}
 
-			return NewOkResponse(), nil
+			return NewHeightResponse(height), nil
 		},
 		logger,
 	))

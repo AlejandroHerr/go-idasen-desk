@@ -44,24 +44,29 @@ func (m *Manager) ReadHeight(addr string) (int, error) {
 	return reading, nil
 }
 
-func (m *Manager) MoveTo(ctx context.Context, addr string, targetHeight int) error {
+func (m *Manager) MoveTo(ctx context.Context, addr string, targetHeight int) (int, error) {
 	deskService, err := m.getDesk(addr)
 	if err != nil {
-		return fmt.Errorf("desk not found: %w", err)
+		return 0, fmt.Errorf("desk not found: %w", err)
 	}
 
 	errCh := make(chan error)
-	// defer close(errCh)
+	defer close(errCh)
 
 	go deskService.MoveTo(ctx, errCh, targetHeight)
 
 	err = <-errCh
 
 	if err != nil {
-		return fmt.Errorf("moving desk to target height: %w", err)
+		return 0, fmt.Errorf("moving desk to target height: %w", err)
 	}
 
-	return nil
+	height, err := deskService.ReadHeight()
+	if err != nil {
+		m.logger.ErrorContext(ctx, "Error reading height", slog.String("error", err.Error()))
+	}
+
+	return height, nil
 }
 
 func (m *Manager) Subscribe(addr string, ch chan<- int) (uuid.UUID, error) {
