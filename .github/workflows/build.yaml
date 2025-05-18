@@ -19,6 +19,7 @@ jobs:
       contents: read
       packages: write
     secrets: inherit
+    needs: prepare
     uses: ./.github/workflows/_build.yaml
     strategy:
       matrix:
