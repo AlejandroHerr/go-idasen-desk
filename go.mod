@@ -5,10 +5,15 @@ go 1.24.3
 require (
 	github.com/AlejandroHerr/go-common v1.3.0
 	github.com/go-ble/ble v0.0.0-20240122180141-8c5522f54333
+	github.com/go-chi/chi/v5 v5.2.1
+	github.com/go-chi/cors v1.2.1
+	github.com/go-chi/render v1.0.3
+	github.com/google/uuid v1.6.0
 )
 
 require (
 	github.com/JuulLabs-OSS/cbgo v0.0.1 // indirect
+	github.com/ajg/form v1.5.1 // indirect
 	github.com/golang-cz/devslog v0.0.13 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.1 // indirect
 	github.com/mattn/go-colorable v0.1.6 // indirect

@@ -2,6 +2,7 @@ version: "3"
 
 vars:
   IMAGE_NAME: go-idasen-desk
+  BUILD_FOLDER: bin
   VERSION:
     sh: git describe --tags --always --dirty 2>/dev/null || echo "dev"
   COMMIT:
@@ -11,19 +12,93 @@ vars:
   LDFLAGS: -ldflags "-X github.com/AlejandroHerr/go-idasen-desk/version.Version={{.VERSION}} -X github.com/AlejandroHerr/go-idasen-desk/version.Commit={{.COMMIT}} -X github.com/AlejandroHerr/go-idasen-desk/version.BuildTime={{.BUILD_TIME}}"
 
 tasks:
-  run/scanner:
+  run/*:
+    internal: true
+    desc: Run application
+    vars:
+      APP: "{{.APP}}"
     cmds:
-      - go run -v ./cmd/scanner/main.go
+      - go run -v ./cmd/{{.APP}}/main.go
+  run/*/watch:
+    internal: true
+    desc: Run application with watch
+    vars:
+      APP: "{{.APP}}"
+    cmds:
+      - wgo run -v ./cmd/{{.APP}}/main.go
+  build/*:
+    internal: true
+    desc: Build application
+    vars:
+      APP: "{{.APP}}"
+    cmds:
+      - echo "Building {{.APP}} {{.VERSION}} ({{.COMMIT}})"
+      - go build {{.LDFLAGS}} -o {{BUILD_FOLDER}}/{{.APP}} ./cmd/{{.APP}}
+    sources:
+      - cmd/{{.APP}}/**/*.go
+      - version/*.go
+    generates:
+      - bin/{{.APP}}
+  docker/*:
+    internal: true
+    desc: Build Docker image
+    vars:
+      APP: "{{.APP}}"
+    cmds:
+      - docker build
+        --build-arg VERSION={{.VERSION}}
+        --build-arg COMMIT={{.COMMIT}}
+        --build-arg BUILD_TIME={{.BUILD_TIME}}
+        -t {{.IMAGE_NAME}}-{{.APP}}:{{.VERSION}}
+        -f Dockerfile.{{.APP}} .
+  run/api:
+    desc: Run Rest API application
+    cmds:
+      - task: run/*
+        vars:
+          APP: api
+  run/api/watch:
+    desc: Run Rest API application with watch
+    cmds:
+      - task: run/*/watch
+        vars:
+          APP: api
+  build/api:
+    desc: Build Rest API application
+    cmds:
+      - task: build/*
+        vars:
+          APP: api
+  docker/api:
+    desc: Build Rest API Docker image
+    cmds:
+      - task: docker/*
+        vars:
+          APP: api
+  run/scanner:
+    desc: Run scanner application
+    cmds:
+      - task: run/*
+        vars:
+          APP: scanner
+  run/scanner/watch:
+    desc: Run scanner application with watch
+    cmds:
+      - task: run/*/watch
+        vars:
+          APP: scanner
   build/scanner:
     desc: Build scanner application
     cmds:
-      - echo "Building scanner {{.VERSION}} ({{.COMMIT}})"
-      - go build {{.LDFLAGS}} -o bin/scanner ./cmd/scanner
-    sources:
-      - cmd/scanner/**/*.go
-      - version/*.go
-    generates:
-      - bin/scanner
+      - task: build/*
+        vars:
+          APP: scanner
+  docker/scanner:
+    desc: Build scanner Docker image
+    cmds:
+      - task: docker/*
+        vars:
+          APP: scanner
   lint:
     desc: Run linters
     cmds:
@@ -32,20 +107,7 @@ tasks:
     desc: Run linters and fix issues
     cmds:
       - golangci-lint run --fix --timeout 5m
-  test:
-    desc: Run tests
-    cmds:
-      - go test -v ./...
-  docker/scanner:
-    desc: Build scanner Docker image
-    cmds:
-      - docker build
-        --build-arg VERSION={{.VERSION}}
-        --build-arg COMMIT={{.COMMIT}}
-        --build-arg BUILD_TIME={{.BUILD_TIME}}
-        -t {{.IMAGE_NAME}}-scanner:{{.VERSION}}
-        -f Dockerfile.scanner .
   clean:
     desc: Clean build artifacts
     cmds:
-      - rm -rf bin/
+      - rm -rf BUILD_FOLDER/
