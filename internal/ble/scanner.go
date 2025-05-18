@@ -42,6 +42,7 @@ func (s *Scanner) ScanByName(
 	s.logger.DebugContext(ctxWithTimeout, "Starting scan")
 
 	advs := make([]idasen.Advertisement, 0)
+
 	advsMap := make(map[string]bool)
 
 	err = s.device.Scan(ctxWithTimeout, false, func(a goble.Advertisement) {

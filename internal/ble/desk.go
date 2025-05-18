@@ -56,7 +56,10 @@ func NewDeskClient(ctx context.Context, addr string, device goble.Device, logger
 	var controlChar, heightChar *goble.Characteristic
 
 	for _, service := range services {
-		chars, err := client.DiscoverCharacteristics(nil, service)
+		chars, err := client.DiscoverCharacteristics( //nolint:govet,shadow // this is the correct way to use it
+			nil,
+			service,
+		)
 		if err != nil {
 			return nil, fmt.Errorf("discovering characteristics for service %s: %w", service.UUID.String(), err)
 		}

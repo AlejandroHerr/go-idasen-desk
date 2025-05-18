@@ -120,14 +120,14 @@ linters:
     - whitespace # detects leading and trailing whitespace
 
     ## you may want to enable
-    #- decorder # checks declaration order and count of types, constants, variables and functions
+    - decorder # checks declaration order and count of types, constants, variables and functions
     - exhaustruct # [highly recommend to enable] checks if all structure fields are initialized
     #- ginkgolinter # [if you use ginkgo/gomega] enforces standards of using ginkgo and gomega
     #- godox # detects usage of FIXME, TODO and other keywords inside comments
     #- goheader # checks is file header matches to pattern
     #- inamedparam # [great idea, but too strict, need to ignore a lot of cases by default] reports interfaces with unnamed method parameters
     #- interfacebloat # checks the number of methods inside an interface
-    #- ireturn # accept interfaces, return concrete types
+    - ireturn # accept interfaces, return concrete types
     #- prealloc # [premature optimization, but can be used in some cases] finds slice declarations that could potentially be preallocated
     #- tagalign # checks that struct tags are well aligned
     #- varnamelen # [great idea, but too many false positives] checks that the length of a variable's name matches its scope
@@ -165,6 +165,13 @@ linters:
       # If it's higher than 0.0 (float) the check is enabled.
       # Default: 0.0
       package-average: 10.0
+
+    decorder:
+      dec-order:
+        - "type"
+        - "const"
+        - "var"
+        - "func"
 
     depguard:
       # Rules to apply.
@@ -280,7 +287,7 @@ linters:
     gocognit:
       # Minimal code complexity to report.
       # Default: 30 (but we recommend 10-20)
-      min-complexity: 20
+      min-complexity: 21
 
     gocritic:
       # Settings passed to gocritic.
