@@ -1,3 +1,3 @@
 {
-  "apps": ["rest", "scanner"]
+  "apps": ["gen-auth-token", "rest", "scanner"]
 }
