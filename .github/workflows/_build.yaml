@@ -62,6 +62,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
+            APP_NAME=${{ inputs.app }}
             VERSION=${{ steps.version.outputs.VERSION }}
             COMMIT=${{ steps.version.outputs.COMMIT }}
             BUILD_TIME=${{ steps.version.outputs.BUILD_TIME }}
