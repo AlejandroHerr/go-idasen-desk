@@ -12,25 +12,22 @@ vars:
   LDFLAGS: -ldflags "-X github.com/AlejandroHerr/go-idasen-desk/version.Version={{.VERSION}} -X github.com/AlejandroHerr/go-idasen-desk/version.Commit={{.COMMIT}} -X github.com/AlejandroHerr/go-idasen-desk/version.BuildTime={{.BUILD_TIME}}"
 
 tasks:
-  run/*:
-    internal: true
+  run:*:
     desc: Run application
     vars:
-      APP: "{{.APP}}"
+      APP: "{{index .match 0}}"
     cmds:
-      - go run -v ./cmd/{{.APP}}/main.go
-  run/*/watch:
-    internal: true
+      - go run -v ./cmd/{{.APP}}/main.go {{.CLI_ARGS}}
+  run:*:watch:
     desc: Run application with watch
     vars:
-      APP: "{{.APP}}"
+      APP: "{{index .match 0}}"
     cmds:
-      - wgo run -v ./cmd/{{.APP}}/main.go
+      - wgo run -v ./cmd/{{.APP}}/main.go {{.CLI_ARGS}}
   build/*:
-    internal: true
     desc: Build application
     vars:
-      APP: "{{.APP}}"
+      APP: "{{index .match 0}}"
     cmds:
       - echo "Building {{.APP}} {{.VERSION}} ({{.COMMIT}})"
       - go build {{.LDFLAGS}} -o {{BUILD_FOLDER}}/{{.APP}} ./cmd/{{.APP}}
@@ -40,10 +37,9 @@ tasks:
     generates:
       - bin/{{.APP}}
   docker/*:
-    internal: true
     desc: Build Docker image
     vars:
-      APP: "{{.APP}}"
+      APP: "{{index .match 0}}"
     cmds:
       - docker build
         --build-arg APP_NAME={{.APP}}
@@ -52,54 +48,10 @@ tasks:
         --build-arg BUILD_TIME={{.BUILD_TIME}}
         -t {{.IMAGE_NAME}}-{{.APP}}:{{.VERSION}}
         -f Dockerfile .
-  run/api:
-    desc: Run Rest API application
+  test:
+    desc: Run tests
     cmds:
-      - task: run/*
-        vars:
-          APP: api
-  run/api/watch:
-    desc: Run Rest API application with watch
-    cmds:
-      - task: run/*/watch
-        vars:
-          APP: api
-  build/api:
-    desc: Build Rest API application
-    cmds:
-      - task: build/*
-        vars:
-          APP: api
-  docker/api:
-    desc: Build Rest API Docker image
-    cmds:
-      - task: docker/*
-        vars:
-          APP: api
-  run/scanner:
-    desc: Run scanner application
-    cmds:
-      - task: run/*
-        vars:
-          APP: scanner
-  run/scanner/watch:
-    desc: Run scanner application with watch
-    cmds:
-      - task: run/*/watch
-        vars:
-          APP: scanner
-  build/scanner:
-    desc: Build scanner application
-    cmds:
-      - task: build/*
-        vars:
-          APP: scanner
-  docker/scanner:
-    desc: Build scanner Docker image
-    cmds:
-      - task: docker/*
-        vars:
-          APP: scanner
+      - go test -v ./...
   lint:
     desc: Run linters
     cmds:
